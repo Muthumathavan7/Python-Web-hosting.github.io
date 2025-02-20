@@ -1,0 +1,171 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Billing Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ccc; }
+        h2, h3 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        table, th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        .denominations { display: flex; flex-direction: column; }
+        button { padding: 10px; margin-top: 10px; cursor: pointer; }
+        .btn-cancel { background-color: grey; color: white; }
+        .btn-generate { background-color: green; color: white; }
+        .btn-add { background-color: blue; color: white; margin-bottom: 10px; }
+    </style>
+    <script>
+        function addNewProduct() {
+            let productList = document.getElementById("product-list");
+            let totalForms = document.getElementById("id_form-TOTAL_FORMS");
+            let newFormIndex = parseInt(totalForms.value);
+            
+            let newForm = document.createElement("div");
+            newForm.innerHTML = productList.children[1].innerHTML.replace(/form-0/g, `form-${newFormIndex}`);
+            productList.appendChild(newForm);
+            
+            totalForms.value = newFormIndex + 1;
+        }
+    
+        function removeProduct(button) {
+            button.parentElement.remove();
+        }
+    </script>
+    
+</head>
+<body>
+    <div class="container">
+        <h2>Billing Page</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label>Customer Email:</label> {{ form.customer_email }}<br><br>
+            
+            <h3>Bill Section</h3>
+            <div id="product-list">
+                <div>
+                    <label>Product:</label> <input type="text" name="product[]" required>
+                    <label>Quantity:</label> <input type="number" name="quantity[]" min="1" required>
+                    <button type="button" onclick="removeProduct(this)">Remove</button>
+                    <br>
+                </div>
+            </div>
+            <button type="button" class="btn-add" onclick="addNewProduct()">Add New</button>
+
+            <h3>Denominations</h3>
+            <div class="denominations">
+                {% for denom in balance_denominations %}
+                    <label>{{ denom }}: <input type="number" name="denom_{{ denom }}" min="0"></label>
+                {% endfor %}
+            </div>
+            
+            <h3>Cash Paid by Customer:</h3>
+            {{ form.paid_amount }}<br>
+
+            <button type="button" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-generate">Generate Bill</button>
+            
+        </form>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+        
+            <h3>Bill Section</h3>
+            <div id="product-list">
+                {{ product_formset.management_form }}
+                {% for product_form in product_formset %}
+                    <div class="product-entry">
+                        {{ product_form.as_p }}
+                        <button type="button" onclick="removeProduct(this)">Remove</button>
+                    </div>
+                {% endfor %}
+            </div>
+        
+            <button type="button" class="btn-add" onclick="addNewProduct()">Add New</button>
+        
+            <h3>Denominations</h3>
+            <div class="denominations">
+                {{ denomination_form.as_p }}
+            </div>
+        
+            <h3>Cash Paid by Customer:</h3>
+            {{ form.paid_amount }}<br>
+        
+            <button type="button" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-generate">Generate Bill</button>
+        </form>
+
+        
+    </div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ccc; }
+        h2, h3 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        table, th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        .denominations { display: flex; flex-direction: column; }
+        button { padding: 10px; margin-top: 10px; cursor: pointer; }
+        .btn-cancel { background-color: grey; color: white; }
+        .btn-generate { background-color: green; color: white; }
+        .btn-add { background-color: blue; color: white; margin-bottom: 10px; }
+    </style>
+    <script>
+        function addNewProduct() {
+            let productList = document.getElementById("product-list");
+            let newProduct = document.createElement("div");
+            newProduct.innerHTML = `
+                <label>Product:</label> <input type="text" name="product[]" required>
+                <label>Quantity:</label> <input type="number" name="quantity[]" min="1" required>
+                <button type="button" onclick="removeProduct(this)">Remove</button>
+                <br>
+            `;
+            productList.appendChild(newProduct);
+        }
+
+        function removeProduct(button) {
+            button.parentElement.remove();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Billing Page</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label>Customer Email:</label> <input type="email" name="customer_email" required><br><br>
+            
+            <h3>Bill Section</h3>
+            <div id="product-list">
+                <div>
+                    <label>Product:</label> <input type="text" name="product[]" required>
+                    <label>Quantity:</label> <input type="number" name="quantity[]" min="1" required>
+                    <button type="button" onclick="removeProduct(this)">Remove</button>
+                    <br>
+                </div>
+            </div>
+            <button type="button" class="btn-add" onclick="addNewProduct()">Add New</button>
+
+            <h3>Denominations</h3>
+            <div class="denominations">
+                {% for denom in denominations %}
+                    <label>{{ denom }}: <input type="number" name="denom_{{ denom }}" min="0"></label>
+                {% endfor %}
+            </div>
+            
+            <h3>Cash Paid by Customer:</h3>
+            <input type="number" name="paid_amount" min="0" required><br>
+
+            <button type="button" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-generate">Generate Bill</button>
+        </form>
+    </div>
+</body>
+</html>
+
